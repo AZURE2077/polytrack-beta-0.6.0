@@ -1,9 +1,6 @@
 /**
  * PolyTrack API Proxy Worker
- * Proxies all requests to vps.kodub.com:43274
- * Handles /v6/ path prefix and port that Cloudflare workers can't bind to.
- *
- * Deploy with: wrangler deploy
+ * Forwards requests to vps.kodub.com:43274, preserving full path including /v6/
  */
 
 const UPSTREAM = "https://vps.kodub.com:43274";
@@ -17,17 +14,8 @@ export default {
       return corsResponse(new Response(null, { status: 204 }));
     }
 
-    // Strip versioned path prefix e.g. /v6/leaderboard -> /leaderboard
-    const cleanPath = url.pathname.replace(/^\/v\d+/, "");
-
-    // Only proxy known API paths
-    const ALLOWED_PATHS = ["/leaderboard", "/recordings", "/user", "/verifyRecordings"];
-    if (!ALLOWED_PATHS.includes(cleanPath)) {
-      return corsResponse(new Response("Not found", { status: 404 }));
-    }
-
-    // Build upstream URL with correct port
-    const upstreamUrl = new URL(cleanPath + url.search, UPSTREAM);
+    // Forward full path + query string as-is
+    const upstreamUrl = new URL(url.pathname + url.search, UPSTREAM);
 
     const upstreamRequest = new Request(upstreamUrl.toString(), {
       method: request.method,
@@ -48,12 +36,10 @@ export default {
     }
 
     const responseBody = await upstreamResponse.arrayBuffer();
-    const response = new Response(responseBody, {
+    return corsResponse(new Response(responseBody, {
       status: upstreamResponse.status,
       headers: upstreamResponse.headers,
-    });
-
-    return corsResponse(response);
+    }));
   },
 };
 
@@ -75,7 +61,6 @@ function corsResponse(response) {
   newHeaders.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   newHeaders.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
   newHeaders.set("Access-Control-Max-Age", "86400");
-
   return new Response(response.body, {
     status: response.status,
     headers: newHeaders,
