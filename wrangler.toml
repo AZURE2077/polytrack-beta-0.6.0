@@ -1,0 +1,10 @@
+name = "vpskodub"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+[vars]
+
+# Enable WebSocket support
+[[unsafe.bindings]]
+name = "WEBSOCKET"
+type = "websocket"
