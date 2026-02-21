@@ -1,10 +1,17 @@
 name = "vpskodub"
 main = "worker.js"
-compatibility_date = "2024-01-01"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
 
-[vars]
+[[d1_databases]]
+binding = "DB"
+database_name = "polytrack-db"
+database_id = "b75c200e-acab-4882-a962-8478966db890"
 
-# Enable WebSocket support
-[[unsafe.bindings]]
-name = "WEBSOCKET"
-type = "websocket"
+[[durable_objects.bindings]]
+name = "MULTIPLAYER_ROOM"
+class_name = "MultiplayerRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["MultiplayerRoom"]
