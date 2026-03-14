@@ -1,16 +1,5 @@
 {
-  "headers": [
-    {
-      "source": "/(.*).glb",
-      "headers": [
-        { "key": "Content-Type", "value": "model/gltf-binary" }
-      ]
-    },
-    {
-      "source": "/(.*).wasm",
-      "headers": [
-        { "key": "Content-Type", "value": "application/wasm" }
-      ]
-    }
-  ]
+  "buildCommand": null,
+  "outputDirectory": ".",
+  "installCommand": "echo 'skip'"
 }
